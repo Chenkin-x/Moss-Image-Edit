@@ -1,6 +1,6 @@
 {
   "snapshot_dir": "../models/MOSS-Image-SFT",
-  "manifest": "./edit_manifest.example.jsonl",
+  "manifest": "./manifest.example.jsonl",
   "cache_dir": "../cache/edit",
   "output_dir": "../output/moss-edit-cached",
   "max_edge": 1024,

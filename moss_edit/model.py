@@ -16,9 +16,10 @@ from torch import nn
 from torch.nn import functional as F
 from torch.utils.checkpoint import checkpoint
 
+from moss_edit.components import EDIT_CONTRACT
+
 # Keep the existing checkpoint contract: changing token order with matching RoPE
 # and masks is a permutation, not a change to the reference-only attention rule.
-EDIT_CONTRACT = "ref-prefix-only-t0__target-text-original-moss-v1"
 
 
 def _tensor_stamp(value: torch.Tensor) -> tuple:

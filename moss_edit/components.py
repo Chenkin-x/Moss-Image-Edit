@@ -1,4 +1,4 @@
-"""Local MOSS pipeline loading and frozen Qwen text conditioning for editing."""
+"""Configuration, model loading, and text conditioning for MOSS editing."""
 from __future__ import annotations
 
 import hashlib
@@ -13,6 +13,9 @@ from typing import Any
 
 import torch
 from torch import nn
+
+EDIT_CONTRACT = "ref-prefix-only-t0__target-text-original-moss-v1"
+
 
 @dataclass(frozen=True)
 class Condition:
@@ -41,6 +44,7 @@ class Condition:
         """Plain tensor mapping suitable for torch.save/weights_only loading."""
         return {"embeds": self.embeds.detach(), "attention_mask": self.attention_mask.detach()}
 
+
 @dataclass(frozen=True)
 class PromptConditions:
     positive: Condition
@@ -58,6 +62,7 @@ class PromptConditions:
             "negative": None if self.negative is None else self.negative.as_dict(),
         }
 
+
 @dataclass
 class TextComponents:
     text_encoder: nn.Module
@@ -67,11 +72,13 @@ class TextComponents:
     offload_text_encoder: bool = False
     metadata: dict[str, Any] = field(default_factory=dict)
 
+
 def _snapshot(path: str | Path) -> Path:
     path = Path(path).expanduser().resolve(strict=True)
     if not path.is_dir() or not (path / "pipeline_moss_image.py").is_file():
         raise ValueError(f"Expected a complete local MOSS-Image snapshot: {path}")
     return path
+
 
 def load_moss_module(snapshot_dir: str | Path) -> ModuleType:
     """Import the local official pipeline without loading model weights."""
@@ -92,6 +99,7 @@ def load_moss_module(snapshot_dir: str | Path) -> ModuleType:
         raise
     return module
 
+
 def load_text_components(snapshot_dir, *, device="cuda", dtype=torch.bfloat16):
     """Load the frozen tokenizer/text encoder; move to GPU when encoding."""
     from transformers import AutoModel, AutoTokenizer
@@ -109,12 +117,14 @@ def load_text_components(snapshot_dir, *, device="cuda", dtype=torch.bfloat16):
         metadata={"text_dim": int(model_config["text_dim"])},
     )
 
+
 def _condition(value: Condition | Mapping[str, torch.Tensor]) -> Condition:
     if isinstance(value, Condition):
         return value
     if isinstance(value, Mapping):
         return Condition(value["embeds"], value["attention_mask"])
     raise TypeError("Cached conditioning must be a Condition or tensor mapping.")
+
 
 def _strings(values: str | Sequence[str], batch: int | None = None) -> list[str]:
     if isinstance(values, str):
@@ -126,6 +136,7 @@ def _strings(values: str | Sequence[str], batch: int | None = None) -> list[str]
     if batch is not None and len(result) != batch:
         raise ValueError("Negative prompts must match the positive batch size.")
     return result
+
 
 @torch.no_grad()
 def encode_prompts(
@@ -209,3 +220,43 @@ def encode_prompts(
             if value.embeds.shape[-1] != components.metadata.get("text_dim", value.embeds.shape[-1]):
                 raise ValueError("Condition embedding width does not match MOSS text_dim.")
     return result
+
+
+def torch_dtype(name):
+    allowed = {"float32": torch.float32, "bfloat16": torch.bfloat16}
+    if name not in allowed:
+        raise ValueError(f"Unsupported dtype {name!r}; choose float32 or bfloat16.")
+    return allowed[name]
+
+
+def read_config(path):
+    path = Path(path).expanduser().resolve(strict=True)
+    config = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(config, dict):
+        raise ValueError("Config must be a JSON object.")
+    # Paths in the JSON are relative to that file, not the launch directory.
+    for key in (
+        "snapshot_dir", "manifest", "cache_dir", "output_dir",
+        "noob_root", "conceptedit_root", "data_index", "noob_pair_index",
+    ):
+        if config.get(key):
+            value = Path(config[key]).expanduser()
+            config[key] = str((path.parent / value).resolve() if not value.is_absolute() else value.resolve())
+    return config
+
+
+def load_transformer(snapshot_dir, device="cuda", dtype=torch.bfloat16):
+    source = Path(snapshot_dir).expanduser().resolve(strict=True)
+    model = load_moss_module(source).MOSSImageTransformer.from_pretrained(
+        str(source / "transformer"), torch_dtype=dtype,
+        local_files_only=True, low_cpu_mem_usage=True,
+    )
+    return model.requires_grad_(False).to(device)
+
+
+def model_metadata(base, snapshot_dir):
+    return {
+        "edit_contract": EDIT_CONTRACT,
+        "snapshot_dir": str(Path(snapshot_dir).expanduser().resolve()),
+        "model_config": {k: v for k, v in dict(base.config).items() if not k.startswith("_")},
+    }

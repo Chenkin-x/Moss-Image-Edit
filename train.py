@@ -12,11 +12,11 @@ import torch.distributed as dist
 from torch.utils.data import DataLoader
 from deepspeed.runtime.zero.muon.muon_optimizer import MuonWithAuxAdam
 
-from moss_edit_lora import inject_lora, save_adapter
-from moss_edit_runtime import load_transformer, model_metadata, read_config
-from moss_edit_varlen import MossVarlenEditModel
-from moss_mixed_data import MixedEdits, MixedBatchSampler, keep_list, init_worker
-from moss_online_encode import FrozenPlacement, OnlineEncoder, release_cuda
+from moss_edit.lora import inject_lora, save_adapter
+from moss_edit.components import load_transformer, model_metadata, read_config
+from moss_edit.attention import MossVarlenEditModel
+from moss_edit.data import MixedEdits, MixedBatchSampler, keep_list, init_worker
+from moss_edit.encoding import FrozenPlacement, OnlineEncoder, release_cuda
 
 
 def flow_loss(model, samples, config, generator, device):
@@ -38,9 +38,9 @@ def flow_loss(model, samples, config, generator, device):
 @torch.no_grad()
 def sample_and_log(engine, encoder, sample, raw, config, step, rank, run):
     from PIL import Image, ImageDraw
-    from moss_components import Condition, load_moss_module
-    from moss_edit_data import decode_latents
-    from sample_edit_lora import sample_latents
+    from moss_edit.components import Condition, load_moss_module
+    from moss_edit.processing import decode_latents
+    from moss_edit.sampling import sample_latents
     editor = engine.module
     editor.eval()
     device = engine.device
@@ -134,7 +134,7 @@ def main():
     engine,optimizer,_,_ = deepspeed.initialize(model=model,optimizer=optimizer,model_parameters=params,config=ds_config)
     if config.get('dit_quantization') == 'quanto_int8':
         assert frozen is None
-        from moss_quanto import quantize_frozen_linears,keep_adapter_state
+        from moss_edit.quantization import quantize_frozen_linears,keep_adapter_state
         quantize_frozen_linears(base,engine)
         model.register_state_dict_post_hook(keep_adapter_state)
         release_cuda()

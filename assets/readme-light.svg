@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 380" role="img" aria-labelledby="title desc">
   <title id="title">MOSS Image Edit</title>
-  <desc id="desc">Reference. Instruct. Edit. A green editing toolkit banner with two illustrated landscape cards showing an imagined change of sky. This is a workflow illustration, not a model result.</desc>
+  <desc id="desc">Prefill once. Reuse every step. A green editing toolkit banner with two illustrated landscape cards showing an imagined change of sky. This is a workflow illustration, not a model result.</desc>
   <defs>
     <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#cad8c6"/></pattern>
     <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#b4c9b4" flood-opacity=".32"/></filter>
@@ -16,11 +16,11 @@
     <text x="80" y="53" font-family="ui-monospace, monospace" font-size="13" letter-spacing="1.8" fill="#5b7460">MOSS-IMAGE / EDITING TOOLKIT</text>
     <text x="54" y="151" font-size="86" font-weight="800" letter-spacing="-4" fill="#203c2b">MOSS</text>
     <text x="54" y="231" font-size="76" font-weight="500" letter-spacing="-3" fill="#203c2b">Image Edit<tspan fill="#3b7553">.</tspan></text>
-    <text x="58" y="276" font-size="21" letter-spacing=".4" fill="#5b7460">Reference. Instruct. Edit.</text>
+    <text x="58" y="276" font-size="21" letter-spacing=".4" fill="#5b7460">Prefill once. Reuse every step.</text>
     <g font-family="ui-monospace, monospace" font-size="12" fill="#31523c">
-      <rect x="56" y="315" width="72" height="28" rx="14" fill="#e4eede"/><text x="76" y="334">LoRA</text>
-      <rect x="138" y="315" width="117" height="28" rx="14" fill="#e4eede"/><text x="154" y="334">FA4 VARLEN</text>
-      <rect x="265" y="315" width="91" height="28" rx="14" fill="#e4eede"/><text x="282" y="334">ZeRO-2</text>
+      <rect x="56" y="315" width="72" height="28" rx="14" fill="#e4eede"/><text x="76" y="334">KV</text>
+      <rect x="138" y="315" width="117" height="28" rx="14" fill="#e4eede"/><text x="154" y="334">CLEAN REF</text>
+      <rect x="265" y="315" width="91" height="28" rx="14" fill="#e4eede"/><text x="282" y="334">LoRA</text>
     </g>
     <g transform="rotate(-7 804 169)">
       <rect x="700" y="57" width="208" height="224" rx="17" fill="#ffffff" stroke="#c6d5c6" filter="url(#shadow)"/>

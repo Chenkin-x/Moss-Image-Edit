@@ -5,8 +5,8 @@ from pathlib import Path
 import torch
 from transformers import AutoModel, AutoTokenizer, QuantoConfig
 
-from moss_components import load_moss_module
-from moss_edit_data import encode_image
+from moss_edit.components import load_moss_module
+from moss_edit.processing import encode_image
 
 
 class FrozenPlacement:

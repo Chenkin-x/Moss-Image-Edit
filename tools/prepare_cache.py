@@ -13,10 +13,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
-try:
-    from . import moss_edit_data as data
-except ImportError:
-    import moss_edit_data as data
+import moss_edit.processing as data
 
 
 DEFAULTS = {

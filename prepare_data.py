@@ -10,7 +10,7 @@ import tarfile
 import lance
 import numpy as np
 
-from moss_edit_runtime import read_config
+from moss_edit.components import read_config
 
 
 def index_tar(job):

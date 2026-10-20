@@ -205,14 +205,6 @@ def decode_latents(vae, latents):
         return result.clamp(-1, 1)
 
 
-def _adapter_module():
-    try:
-        from . import moss_components
-    except ImportError:
-        import moss_components
-    return moss_components
-
-
 def load_encoding_components(snapshot_dir, *, device="cuda", dtype=None, vae_dtype=None):
     """Load the frozen Qwen/tokenizer and FLUX.2 VAE for editing."""
     from importlib.metadata import version
@@ -225,7 +217,7 @@ def load_encoding_components(snapshot_dir, *, device="cuda", dtype=None, vae_dty
             "MOSS-Image's asymmetric FLUX.2 VAE requires diffusers>=0.38.0; "
             "older versions do not support decoder_block_out_channels."
         )
-    adapter = _adapter_module()
+    from moss_edit import components as adapter
     dtype = torch.bfloat16 if dtype is None else dtype
     vae_dtype = torch.float32 if vae_dtype is None else vae_dtype
     source = Path(snapshot_dir).expanduser().resolve(strict=True)
@@ -241,7 +233,7 @@ def prepare_sample(record: EditRecord, components: EncodingComponents, *, max_ed
                    max_sequence_length=4096, sample_posterior=False, generator=None):
     """Encode one sample independently; variable image/text lengths stay unpadded."""
 
-    adapter = _adapter_module()
+    from moss_edit import components as adapter
     if not 1 <= max_sequence_length <= 4096:
         raise ValueError("max_sequence_length must lie in [1, 4096].")
     encoded, sizes, originals = [], [], []

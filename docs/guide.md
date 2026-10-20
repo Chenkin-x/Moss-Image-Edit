@@ -6,7 +6,7 @@
 
 `requirements.txt` 按源训练环境整理。主要版本为 PyTorch 2.11、Transformers 5.5.3、DeepSpeed 0.19.6、Flash Attention 4.0.0b35、Optimum Quanto 0.2.7；Diffusers 固定到源环境使用的提交。
 
-当前 FA4 实现来自 RTX 5090 训练环境，使用 FA4 的内部 backward 接口。更换 FA4 版本需要同步检查该接口。源环境使用 CUDA 12.8；本次本地整理未重新执行多卡训练。
+所有命令均从仓库根目录运行。项目直接使用本地 `moss_edit` 包，无需安装项目本身。
 
 模型目录需要包含官方 `pipeline_moss_image.py` 与完整权重：
 
@@ -20,7 +20,7 @@ models/MOSS-Image-SFT/
 └── scheduler/
 ```
 
-`scripts/patch_deepspeed_muon.py` 修改**当前 Python 环境安装的 DeepSpeed 0.19.6**，备份原文件后，为 Muon 及其 ZeRO-2 调用链增加 `adjust_lr_fn`。默认使用 `match_rms_adamw`，正交化后的更新按 `0.2 * sqrt(max(rows, cols))` 缩放。只需在训练前执行一次，不会自动修改正在运行的训练。
+`tools/patch_deepspeed_muon.py` 修改**当前 Python 环境安装的 DeepSpeed 0.19.6**，备份原文件后，为 Muon 及其 ZeRO-2 调用链增加 `adjust_lr_fn`。默认使用 `match_rms_adamw`，正交化后的更新按 `0.2 * sqrt(max(rows, cols))` 缩放。只需在训练前执行一次，不会自动修改正在运行的训练。
 
 ## 在线数据
 
@@ -45,7 +45,7 @@ TAR 内的样本 JSON 必须用 `images.source`、`images.edited` 指向实际�
 NOOB2 使用 `images.lance` 的 `img_id`、`data`，以及 `pairs.lance` 的 `pair_id`、`description`、`img_a_id`、`img_b_id`、`rev`。索引脚本从 `rev=0` 且指令非空的样本中抽取 `noob_subset_samples` 对，以 `noob_subset_seed` 固定抽样。已有子集文件会直接复用；修改数量或种子时，也请修改 `noob_pair_index` 文件名。
 
 ```bash
-python scripts/index_edit_sources.py --config configs/train.json
+python prepare_data.py --config configs/train.json
 ```
 
 图像读取使用 Lance 批量 `take` 与 TAR 偏移读取。参考图和目标图根据参考图尺寸共同缩放，长边不超过 `max_edge`、宽高为 16 的倍数，不裁剪、不补边。VAE 对同一对图像一起编码；不同样本保持各自尺寸。
@@ -56,11 +56,11 @@ python scripts/index_edit_sources.py --config configs/train.json
 
 ```bash
 torchrun --standalone --nproc_per_node=4 \
-  scripts/train_edit_zero2.py --config configs/train.json
+  train.py --config configs/train.json
 
 # 从完整的 ZeRO-2 checkpoint 恢复
 torchrun --standalone --nproc_per_node=4 \
-  scripts/train_edit_zero2.py --config configs/train.json \
+  train.py --config configs/train.json \
   --resume output/moss-edit/checkpoint-00001000
 ```
 
@@ -85,19 +85,43 @@ output/moss-edit/
 
 指标包含 target FM loss、采样时间均值、学习率、Muon 更新 RMS、在线编码和训练耗时、峰值已分配显存。`muon_update_norm` 是正交化后的更新范数，不是原始梯度范数。当前 ZeRO-2 入口关闭梯度裁剪。
 
-## 编辑机制
+## 参考图 KV cache
 
-token 顺序为 `[text, ref, target]`：
+![参考图 KV cache 架构](../assets/kv-cache-architecture.png)
 
-| Query 来源 | 可读取的 Key / Value | 时间 |
-|:---|:---|:---|
-| text | text、ref、target | 当前 `t` |
-| ref | ref | 固定 `0` |
-| target | text、ref、target | 当前 `t` |
+### 时间调制
 
-MOSS 的文本编码、text refiner、4D RoPE 与 target/text 时间调制保留。参考图增加独立位置标识，以 clean latent 参与每一步前向与反向。
+ref 的 latent 保持 clean，主干中使用固定的 `t_ref=0`。时间网络在该输入下生成固定的 shift、scale 和 gate。`t=0` 是网络的输入值，得到的调制参数仍然是学习到的参数。
 
-训练仅计算 target 的速度损失，先对每张图的通道和空间维取均值，再对样本取均值，避免大图获得更高权重：
+text 与 target 在主干中使用当前的 `t`。虽然文本编码器的输入文字不变，主干中的文本特征仍参与时间调制，并与不断变化的 target 交互，因此 text 与 target 都在每个去噪步重新计算。两条数据流使用同一套主干权重。
+
+### 注意力可见关系
+
+token 顺序为 `[text, ref, target]`。下表的行是 Query，列是 Key / Value；`1` 表示可见，`0` 表示屏蔽：
+
+| Query \ Key / Value | text | ref | target |
+|:---|:---:|:---:|:---:|
+| text | 1 | 1 | 1 |
+| ref | 0 | 1 | 0 |
+| target | 1 | 1 | 1 |
+
+每个可见块内部均为双向注意力。ref 的信息可以流向 text 与 target，而动态的 text / target 不会反过来更新 ref。结合固定时间调制，ref 的逐层隐藏状态在整个采样过程中保持一致。
+
+参考图使用独立的图像位置标识和空间坐标。它的位置编码不随提示词长度和 target 状态变化，token 拼接时保留各自坐标。
+
+### 构建与复用
+
+`moss_edit/model.py` 的 `prepare_cache()` 将参考 tokens 独立送入全部 Transformer 层。在每层计算归一化、时间调制、Q/K/V 投影与位置编码后，保存该层的 K/V；ref 隐藏状态继续经过参考图内部的 attention 和 MLP，送入下一层。
+
+每层保存的是该层的 `K_ref` 与 `V_ref`，其中 K 已经过 QK normalization 和 RoPE。去噪时，当前层的 text/target 计算自己的 Q/K/V，再按 `[text, ref, target]` 顺序拼入缓存的参考 K/V。只更新 text/target 隐藏状态，最后读取 target 的速度预测。
+
+`moss_edit/sampling.py` 在采样循环前构建缓存，之后所有去噪步共用该缓存。CFG 的两个分支只改变文本条件，ref 不依赖文本，因此也共用同一份缓存。参考图或模型权重变化后重新构建。
+
+[`configs/infer.json`](../configs/infer.json) 用于独立编辑推理，默认启用缓存。`--no-kv-cache` 可用于对比逐步重算参考图的结果。
+
+### 训练目标
+
+训练时参考分支参与反向传播。只对 target 加噪并计算速度 MSE，先在每张图内部取均值，再对样本取均值：
 
 ```python
 t = (torch.randn(batch) * time_std + time_mean).sigmoid()
@@ -107,28 +131,24 @@ pred = model(noisy_target, t, text, clean_ref)
 loss = mean_per_sample((pred - (noise - target)).square()).mean()
 ```
 
-以上仅为算法示意；实际图像使用变长列表，见 `train_edit_zero2.py::flow_loss`。
-
-FA4 前向通过 `mask_mod` 实现 mask，反向按 `ref→ref`、`text/target→all` 两个区域分别计算，并累加 ref 的 K/V 梯度。当前训练与 FA4 采样均重算 ref；这里没有跨去噪步的 KV cache。
-
-`moss_edit_model.py` 的 dense 路径支持推理时 ref KV cache。只有该路径使用缓存，且要求 `eval()` 与 `no_grad()`。参考图只读取 ref，因此其缓存不依赖提示词或 target；更新模型或参考图后需重新构建缓存。
+这是算法示意；实际的变长图像使用列表，计算见 `train.py::flow_loss`。
 
 ## JSONL 预编码入口
 
-该入口使用 `configs/edit_lora.json`，与默认训练配置独立：单卡 / DDP、AdamW、逐样本计算，支持 1–4 张参考图。
+该入口使用 `configs/cached.json`，与默认训练配置独立：单卡 / DDP、AdamW、逐样本计算，支持 1–4 张参考图。
 
 ```json
 {"id":"edit-001","instruction":"Change the background to a sunny beach.","source_images":["images/source.png"],"target_image":"images/target.png"}
 ```
 
-图片路径相对 JSONL 所在目录，更多例子见 `configs/edit_manifest.example.jsonl`。该入口分别缩放各张参考图和目标图；默认在线单图编辑入口使用同一缩放尺寸。
+图片路径相对 JSONL 所在目录，更多例子见 `configs/manifest.example.jsonl`。该入口分别缩放各张参考图和目标图；默认在线单图编辑入口使用同一缩放尺寸。
 
 ```bash
-python scripts/prepare_edit_cache.py --config configs/edit_lora.json
-python scripts/train_edit_lora.py --config configs/edit_lora.json
+python -m tools.prepare_cache --config configs/cached.json
+python -m tools.train_cached --config configs/cached.json
 
-# 使用预编码配置执行 dense 推理，默认启用 ref KV cache
-python scripts/sample_edit_lora.py --config configs/edit_lora.json \
+# 使用预编码配置推理，默认启用 ref KV cache
+python infer.py --config configs/cached.json \
   --adapter output/moss-edit-cached/checkpoint-00000500 \
   --references reference.png --prompt "Change the background to a sunny beach." \
   --height 1024 --width 1024 --output edited.png
@@ -140,16 +160,20 @@ python scripts/sample_edit_lora.py --config configs/edit_lora.json \
 
 | 文件 | 用途 |
 |:---|:---|
-| `train_edit_zero2.py` | 默认多卡训练、采样、checkpoint |
-| `moss_edit_varlen.py` | FA4 打包、mask 与对应反向 |
-| `moss_edit_model.py` | 编辑模块与 dense ref KV cache |
-| `moss_edit_lora.py` | LoRA 注入、导出、加载 |
-| `moss_mixed_data.py` | NOOB2 / ConceptEdit 混合读取 |
-| `index_edit_sources.py` | TAR 索引与 NOOB2 固定子集 |
-| `moss_online_encode.py` | 冻结 VAE / Qwen 在线编码 |
-| `moss_components.py` | 本地 pipeline 加载与文本条件 |
-| `moss_quanto.py` | 冻结 Linear 的 INT8 量化 |
-| `patch_deepspeed_muon.py` | DeepSpeed Muon RMS matching |
-| `sample_edit_lora.py` | 独立编辑推理 |
+| `train.py` | 多卡训练、在线预览与 checkpoint |
+| `infer.py` | 编辑推理命令行入口 |
+| `prepare_data.py` | TAR 索引与 NOOB2 固定子集 |
+| `moss_edit/model.py` | 编辑模型、参考图 prefill 与逐层 KV cache |
+| `moss_edit/attention.py` | 变长打包、注意力 mask 与反向 |
+| `moss_edit/lora.py` | LoRA 注入、导出、加载 |
+| `moss_edit/data.py` | NOOB2 / ConceptEdit 混合读取 |
+| `moss_edit/encoding.py` | 冻结 VAE / Qwen 在线编码 |
+| `moss_edit/processing.py` | 图像与 latent 处理、预编码数据读写 |
+| `moss_edit/components.py` | 配置、底模加载与文本条件 |
+| `moss_edit/sampling.py` | 训练预览和独立推理共用的去噪循环 |
+| `moss_edit/quantization.py` | 冻结 Linear 的 INT8 量化 |
+| `tools/patch_deepspeed_muon.py` | DeepSpeed Muon RMS matching |
+| `tools/prepare_cache.py` | JSONL 数据的 VAE / Qwen 预编码 |
+| `tools/train_cached.py` | 基于预编码数据的单卡 / DDP 训练 |
 
-代码文件均位于 `scripts/`。仓库代码采用 GPLv3，模型权重与第三方依赖使用各自许可证。
+仓库代码采用 GPLv3，模型权重与第三方依赖使用各自许可证。

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Train reference-conditioned MOSS LoRA from frozen VAE/Qwen feature caches.
 
-Run directly or with torchrun. Each forward is an unpadded, variable-shape
+Run with python -m tools.train_cached or torchrun --module tools.train_cached.
+Each forward is an unpadded, variable-shape
 sample. ``samples_per_step`` is per rank; global batch = this * world size.
 No detached transformer KV cache is used during training.
 """
@@ -22,14 +23,9 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader, Dataset, DistributedSampler
 
-try:
-    from .moss_edit_data import load_cached_sample
-    from .moss_edit_lora import inject_lora, load_adapter, save_adapter
-    from .moss_edit_runtime import load_transformer, model_metadata, read_config, torch_dtype
-except ImportError:
-    from moss_edit_data import load_cached_sample
-    from moss_edit_lora import inject_lora, load_adapter, save_adapter
-    from moss_edit_runtime import load_transformer, model_metadata, read_config, torch_dtype
+from moss_edit.processing import load_cached_sample
+from moss_edit.lora import inject_lora, load_adapter, save_adapter
+from moss_edit.components import load_transformer, model_metadata, read_config, torch_dtype
 
 
 class CachedEdits(Dataset):
@@ -140,10 +136,7 @@ def save_checkpoint(base, optimizer, directory, *, step, consumed, config, metad
 
 def train(config, *, resume=None):
     # Imported lazily so --help works before transformer dependencies are installed.
-    try:
-        from .moss_edit_model import MossEditModel
-    except ImportError:
-        from moss_edit_model import MossEditModel
+    from moss_edit.model import MossEditModel
 
     world = int(os.environ.get("WORLD_SIZE", "1"))
     rank, local_rank = int(os.environ.get("RANK", "0")), int(os.environ.get("LOCAL_RANK", "0"))

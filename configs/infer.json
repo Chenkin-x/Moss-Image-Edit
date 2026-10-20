@@ -1,0 +1,12 @@
+{
+  "snapshot_dir": "../models/MOSS-Image-SFT",
+  "max_edge": 256,
+  "max_ref_images": 1,
+  "max_sequence_length": 4096,
+  "encoder_dtype": "bfloat16",
+  "vae_dtype": "float32",
+  "device": "cuda",
+  "dtype": "bfloat16",
+  "training_shift": 1.0,
+  "inference_shift": 5.0
+}

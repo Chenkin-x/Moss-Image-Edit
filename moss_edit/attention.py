@@ -9,7 +9,7 @@ from flash_attn.cute import utils as fa_utils
 from flash_attn.cute.interface import _flash_attn_bwd
 from torch.utils.checkpoint import checkpoint
 
-from moss_edit_model import MossEditModel
+from moss_edit.model import MossEditModel
 
 
 def varlen_attn(q, k, v, cu_q, cu_k, max_q, max_k):
