@@ -1,252 +1,191 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1120" role="img" aria-labelledby="title desc">
-<title id="title">MOSS Image Edit: reference KV cache architecture</title>
-<desc id="desc">Text and target queries see all tokens and use the current timestep. Reference queries see only reference tokens and use fixed timestep zero. Reference K/V are computed once for every layer, then reused by text and target across denoising steps and CFG branches.</desc>
-<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#5d6d83" stroke-width="1.5"/></marker><marker id="greenArrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#256a4c" stroke-width="1.5"/></marker></defs>
-<rect width="1600" height="1120" rx="18" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 1280" role="img" aria-labelledby="title desc">
+<title id="title">MOSS-Image-Edit: tokens, time conditioning and reference KV cache</title>
+<desc id="desc">Text tokens come from the text encoder, reference tokens from clean VAE latents, and target tokens from noisy VAE latents. In sequence order text, ref, target, their modulation times are t, zero, t. All use shared Transformer weights. Reference queries only read reference keys and values. Text and target queries read all tokens. Each layer reference K/V is computed once and reused across denoising steps.</desc>
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#677386" stroke-width="1.6"/></marker>
+<marker id="time" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#dc676b" stroke-width="1.6"/></marker>
+<marker id="cache" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#4e8e62" stroke-width="1.6"/></marker>
+</defs>
+<rect width="1680" height="1280" fill="white"/>
 <g font-family="Inter, Noto Sans CJK SC, sans-serif">
-<text x="52" y="59" font-size="17" font-weight="500" fill="#607087" text-anchor="start">MOSS-IMAGE EDIT  /  REFERENCE KV CACHE</text>
-<text x="52" y="116" font-size="39" font-weight="700" fill="#213047" text-anchor="start">参考图只计算一次，K/V 随后逐层复用</text>
-<text x="52" y="158" font-size="23" font-weight="400" fill="#607087" text-anchor="start">固定时间调制 + ref-only 可见关系，使参考特征独立于当前去噪状态与提示词。</text>
-<text x="218" y="211" font-size="27" font-weight="650" fill="#213047" text-anchor="start">Attention mask</text>
-<path d="M473 206 H792" fill="none" stroke="#5d6d83" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<text x="545" y="192" font-size="21" font-weight="400" fill="#607087" text-anchor="start">Key / Value</text>
-<rect x="218" y="232" width="142" height="34" rx="4" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<text x="290.0" y="257" font-size="23" font-weight="650" fill="#315f9c" text-anchor="middle">text</text>
-<text x="195" y="347.0" font-size="25" font-weight="650" fill="#315f9c" text-anchor="end">text</text>
-<text x="195" y="378.0" font-size="20" font-weight="400" fill="#315f9c" text-anchor="end" font-family="DejaVu Sans Mono, monospace">t = t_k</text>
-<rect x="362" y="232" width="190" height="34" rx="4" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<text x="458.0" y="257" font-size="23" font-weight="650" fill="#256a4c" text-anchor="middle">ref</text>
-<text x="195" y="515.0" font-size="25" font-weight="650" fill="#256a4c" text-anchor="end">ref</text>
-<text x="195" y="546.0" font-size="20" font-weight="400" fill="#256a4c" text-anchor="end" font-family="DejaVu Sans Mono, monospace">t = 0</text>
-<rect x="554" y="232" width="238" height="34" rx="4" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<text x="674.0" y="257" font-size="23" font-weight="650" fill="#986348" text-anchor="middle">target</text>
-<text x="195" y="731.0" font-size="25" font-weight="650" fill="#986348" text-anchor="end">target</text>
-<text x="195" y="762.0" font-size="20" font-weight="400" fill="#986348" text-anchor="end" font-family="DejaVu Sans Mono, monospace">t = t_k</text>
-<path d="M61 282 V852" fill="none" stroke="#5d6d83" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<text x="61" y="261" font-size="21" font-weight="500" fill="#607087" text-anchor="middle">Query</text>
-<rect x="219" y="279" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="267" y="279" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="315" y="279" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="363" y="279" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="279" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="279" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="279" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="279" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="603" y="279" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="651" y="279" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="699" y="279" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="747" y="279" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="219" y="327" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="267" y="327" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="315" y="327" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="363" y="327" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="327" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="327" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="327" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="327" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="603" y="327" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="651" y="327" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="699" y="327" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="747" y="327" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="219" y="375" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="267" y="375" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="315" y="375" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="363" y="375" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="375" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="375" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="375" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="375" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="603" y="375" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="651" y="375" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="699" y="375" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="747" y="375" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="219" y="423" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M237.0 441.0 l10 10 M237.0 451.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="267" y="423" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M285.0 441.0 l10 10 M285.0 451.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="315" y="423" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M333.0 441.0 l10 10 M333.0 451.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="363" y="423" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="423" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="423" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="423" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="423" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M573.0 441.0 l10 10 M573.0 451.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="603" y="423" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M621.0 441.0 l10 10 M621.0 451.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="651" y="423" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M669.0 441.0 l10 10 M669.0 451.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="699" y="423" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M717.0 441.0 l10 10 M717.0 451.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="747" y="423" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M765.0 441.0 l10 10 M765.0 451.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="219" y="471" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M237.0 489.0 l10 10 M237.0 499.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="267" y="471" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M285.0 489.0 l10 10 M285.0 499.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="315" y="471" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M333.0 489.0 l10 10 M333.0 499.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="363" y="471" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="471" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="471" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="471" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="471" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M573.0 489.0 l10 10 M573.0 499.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="603" y="471" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M621.0 489.0 l10 10 M621.0 499.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="651" y="471" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M669.0 489.0 l10 10 M669.0 499.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="699" y="471" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M717.0 489.0 l10 10 M717.0 499.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="747" y="471" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M765.0 489.0 l10 10 M765.0 499.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="219" y="519" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M237.0 537.0 l10 10 M237.0 547.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="267" y="519" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M285.0 537.0 l10 10 M285.0 547.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="315" y="519" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M333.0 537.0 l10 10 M333.0 547.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="363" y="519" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="519" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="519" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="519" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="519" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M573.0 537.0 l10 10 M573.0 547.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="603" y="519" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M621.0 537.0 l10 10 M621.0 547.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="651" y="519" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M669.0 537.0 l10 10 M669.0 547.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="699" y="519" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M717.0 537.0 l10 10 M717.0 547.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="747" y="519" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M765.0 537.0 l10 10 M765.0 547.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="219" y="567" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M237.0 585.0 l10 10 M237.0 595.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="267" y="567" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M285.0 585.0 l10 10 M285.0 595.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="315" y="567" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M333.0 585.0 l10 10 M333.0 595.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="363" y="567" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="567" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="567" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="567" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="567" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M573.0 585.0 l10 10 M573.0 595.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="603" y="567" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M621.0 585.0 l10 10 M621.0 595.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="651" y="567" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M669.0 585.0 l10 10 M669.0 595.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="699" y="567" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M717.0 585.0 l10 10 M717.0 595.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="747" y="567" width="46" height="46" rx="0" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<path d="M765.0 585.0 l10 10 M765.0 595.0 l10 -10" fill="none" stroke="#bac3ce" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="219" y="615" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="267" y="615" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="315" y="615" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="363" y="615" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="615" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="615" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="615" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="615" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="603" y="615" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="651" y="615" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="699" y="615" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="747" y="615" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="219" y="663" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="267" y="663" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="315" y="663" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="363" y="663" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="663" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="663" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="663" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="663" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="603" y="663" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="651" y="663" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="699" y="663" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="747" y="663" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="219" y="711" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="267" y="711" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="315" y="711" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="363" y="711" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="711" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="711" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="711" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="711" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="603" y="711" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="651" y="711" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="699" y="711" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="747" y="711" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="219" y="759" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="267" y="759" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="315" y="759" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="363" y="759" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="759" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="759" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="759" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="759" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="603" y="759" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="651" y="759" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="699" y="759" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="747" y="759" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="219" y="807" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="267" y="807" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="315" y="807" width="46" height="46" rx="0" fill="#d9e6ff" stroke="none" stroke-width="1.5"/>
-<rect x="363" y="807" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="411" y="807" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="459" y="807" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="507" y="807" width="46" height="46" rx="0" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<rect x="555" y="807" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="603" y="807" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="651" y="807" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="699" y="807" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="747" y="807" width="46" height="46" rx="0" fill="#f4ded2" stroke="none" stroke-width="1.5"/>
-<rect x="216" y="420" width="580" height="196" rx="0" fill="none" stroke="#256a4c" stroke-width="2.8"/>
-<path d="M814 283 h14 V417 h-14" fill="none" stroke="#315f9c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="848" y="352.0" font-size="24" font-weight="650" fill="#315f9c" text-anchor="start">每步重算</text>
-<path d="M814 427 h14 V609 h-14" fill="none" stroke="#256a4c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="848" y="520.0" font-size="24" font-weight="650" fill="#256a4c" text-anchor="start">只算一次</text>
-<text x="848" y="553.0" font-size="19" font-weight="400" fill="#256a4c" text-anchor="start">保存逐层 K/V</text>
-<path d="M814 619 h14 V849 h-14" fill="none" stroke="#986348" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="848" y="736.0" font-size="24" font-weight="650" fill="#986348" text-anchor="start">每步重算</text>
-<rect x="218" y="888" width="20" height="20" rx="3" fill="#c4e8d6" stroke="none" stroke-width="1.5"/>
-<text x="248" y="906" font-size="20" font-weight="400" fill="#607087" text-anchor="start">彩色：可见</text>
-<rect x="414" y="888" width="20" height="20" rx="3" fill="#e9edf1" stroke="none" stroke-width="1.5"/>
-<text x="444" y="906" font-size="20" font-weight="400" fill="#607087" text-anchor="start">灰色：屏蔽</text>
-<text x="646" y="906" font-size="20" font-weight="400" fill="#607087" text-anchor="start">块内双向</text>
-<path d="M1031 207 V922" fill="none" stroke="#e1e6ed" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="1072" y="211" font-size="27" font-weight="650" fill="#213047" text-anchor="start">Prefill → Cache → Reuse</text>
-<rect x="1072" y="247" width="476" height="81" rx="10" fill="#f0f8f3" stroke="#aed7bf" stroke-width="1.5"/>
-<text x="1310" y="282" font-size="25" font-weight="600" fill="#256a4c" text-anchor="middle">Clean reference tokens</text>
-<text x="1310" y="310" font-size="20" font-weight="400" fill="#607087" text-anchor="middle">参考 latent / 位置编码固定</text>
-<path d="M1310 328 V366" fill="none" stroke="#256a4c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#greenArrow)"/>
-<rect x="1072" y="374" width="476" height="103" rx="10" fill="#f0f8f3" stroke="#aed7bf" stroke-width="1.5"/>
-<text x="1310" y="413" font-size="25" font-weight="600" fill="#256a4c" text-anchor="middle">Reference-only DiT blocks</text>
-<text x="1310" y="448" font-size="22" font-weight="400" fill="#256a4c" text-anchor="middle">t = 0 · 逐层 attention + MLP</text>
-<text x="1530" y="362" font-size="18" font-weight="400" fill="#607087" text-anchor="end">× L layers</text>
-<path d="M1310 478 V518" fill="none" stroke="#256a4c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#greenArrow)"/>
-<rect x="1080" y="534" width="460" height="120" rx="12" fill="#e9f4ed" stroke="#9dc8af" stroke-width="1.5"/>
-<rect x="1076" y="530" width="468" height="120" rx="12" fill="#e4f2e9" stroke="#9dc8af" stroke-width="1.5"/>
-<rect x="1072" y="526" width="476" height="120" rx="12" fill="#daf0e3" stroke="#256a4c" stroke-width="2"/>
-<text x="1310" y="566" font-size="21" font-weight="600" fill="#256a4c" text-anchor="middle" font-family="DejaVu Sans Mono, monospace">Cache[l] = (K_ref[l], V_ref[l])</text>
-<rect x="1093" y="587" width="103" height="35" rx="5" fill="#f7fcf8" stroke="#aed7bf" stroke-width="1.5"/>
-<text x="1144.5" y="612" font-size="19" font-weight="500" fill="#256a4c" text-anchor="middle">Layer 1</text>
-<rect x="1205" y="587" width="103" height="35" rx="5" fill="#f7fcf8" stroke="#aed7bf" stroke-width="1.5"/>
-<text x="1256.5" y="612" font-size="19" font-weight="500" fill="#256a4c" text-anchor="middle">Layer 2</text>
-<rect x="1317" y="587" width="67" height="35" rx="5" fill="#f7fcf8" stroke="#aed7bf" stroke-width="1.5"/>
-<text x="1350.5" y="612" font-size="19" font-weight="500" fill="#256a4c" text-anchor="middle">…</text>
-<rect x="1393" y="587" width="135" height="35" rx="5" fill="#f7fcf8" stroke="#aed7bf" stroke-width="1.5"/>
-<text x="1460.5" y="612" font-size="19" font-weight="500" fill="#256a4c" text-anchor="middle">Layer L</text>
-<path d="M1310 655 V721" fill="none" stroke="#256a4c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#greenArrow)"/>
-<text x="1332" y="688" font-size="20" font-weight="400" fill="#256a4c" text-anchor="start">按层读取</text>
-<rect x="1072" y="731" width="476" height="126" rx="10" fill="#f4f6fa" stroke="#b9c6d7" stroke-width="1.5"/>
-<text x="1310" y="768" font-size="25" font-weight="600" fill="#213047" text-anchor="middle">每个去噪步 · 每一层 l</text>
-<text x="1310" y="803" font-size="21" font-weight="400" fill="#213047" text-anchor="middle" font-family="DejaVu Sans Mono, monospace">Q = [Q_text, Q_target]</text>
-<text x="1310" y="835" font-size="20" font-weight="400" fill="#213047" text-anchor="middle" font-family="DejaVu Sans Mono, monospace">K/V = [text, cache[l], target]</text>
-<text x="1310" y="894" font-size="22" font-weight="500" fill="#256a4c" text-anchor="middle">跨步复用 · CFG 正 / 负条件共用</text>
-<rect x="52" y="955" width="1496" height="125" rx="12" fill="#f7f9fb" stroke="#e0e6ec" stroke-width="1.5"/>
-<text x="80" y="990" font-size="20" font-weight="600" fill="#607087" text-anchor="start">Time modulation</text>
-<text x="80" y="1031" font-size="25" font-weight="500" fill="#256a4c" text-anchor="start" font-family="DejaVu Sans Mono, monospace">mod_ref = TimeMLP(0)</text>
-<text x="655" y="1031" font-size="25" font-weight="500" fill="#315f9c" text-anchor="start" font-family="DejaVu Sans Mono, monospace">mod_text,target = TimeMLP(t_k)</text>
-<text x="80" y="1062" font-size="21" font-weight="400" fill="#256a4c" text-anchor="start">固定 shift / scale / gate</text>
-<text x="655" y="1062" font-size="21" font-weight="400" fill="#315f9c" text-anchor="start">使用同一套调制权重，随当前 t_k 更新</text>
+<text x="52" y="63" fill="#263246" font-size="42" font-weight="700" text-anchor="start">MOSS-Image-Edit</text>
+<text x="52" y="104" fill="#6e7989" font-size="24" font-weight="400" text-anchor="start">Token 来源、时间调制与逐层参考 KV 复用</text>
+<text x="1625" y="61" fill="#4e8e62" font-size="19" font-weight="650" text-anchor="end">REFERENCE KV CACHE</text>
+<path d="M52 128 H1628" fill="none" stroke="#e1e6ec" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="806.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="835.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="864.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="893.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="922.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="951.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<text x="778" y="170" fill="#b97857" font-size="21" font-weight="550" text-anchor="end">V prediction</text>
+<rect x="773.0" y="208" width="234" height="49" rx="8" fill="#f4ded2" stroke="#d6b8a8" stroke-width="1.7"/>
+<text x="890" y="240.55" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Output projection</text>
+<path d="M890 208 V178" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M890 299 V257" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="71" y="299" width="1037" height="446" rx="12" fill="#fafbfd" stroke="#aab6c6" stroke-width="2"/>
+<text x="99" y="334" fill="#263246" font-size="28" font-weight="650" text-anchor="start">MOSS Transformer block</text>
+<text x="800" y="333" fill="#6e7989" font-size="23" font-weight="500" text-anchor="end">× L · shared weights</text>
+<text x="99" y="357" fill="#6e7989" font-size="17" font-weight="400" text-anchor="start">时间调制用于 attention、MLP 与残差门控</text>
+<rect x="102.5" y="372" width="915" height="59" rx="8" fill="#edf1f7" stroke="#b9c5d5" stroke-width="1.7"/>
+<text x="560" y="410.25" fill="#263246" font-size="25" font-weight="550" text-anchor="middle">Feed-forward + residual</text>
+<path d="M890 372 V299" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M230 471 V432" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M560 471 V432" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M890 471 V432" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="102.5" y="471" width="915" height="69" rx="8" fill="#edf1f7" stroke="#b9c5d5" stroke-width="1.7"/>
+<text x="560" y="514.6" fill="#263246" font-size="26" font-weight="550" text-anchor="middle">Masked joint attention</text>
+<rect x="119.0" y="579" width="222" height="44" rx="8" fill="#dce9fc" stroke="#547fb3" stroke-width="1.7"/>
+<text x="230" y="609.05" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Q / K / V</text>
+<path d="M230 579 V540" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M230 659 V623" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="449.0" y="579" width="222" height="44" rx="8" fill="#daeddf" stroke="#4e8e62" stroke-width="1.7"/>
+<text x="560" y="609.05" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Q / K / V</text>
+<path d="M560 579 V540" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M560 659 V623" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="779.0" y="579" width="222" height="44" rx="8" fill="#f4ded2" stroke="#b97857" stroke-width="1.7"/>
+<text x="890" y="609.05" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Q / K / V</text>
+<path d="M890 579 V540" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M890 659 V623" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="119.0" y="659" width="222" height="53" rx="8" fill="#dce9fc" stroke="#547fb3" stroke-width="1.7"/>
+<text x="230" y="693.55" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Modulation(t)</text>
+<rect x="449.0" y="659" width="222" height="53" rx="8" fill="#daeddf" stroke="#4e8e62" stroke-width="1.7"/>
+<text x="560" y="693.55" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Modulation(0)</text>
+<rect x="779.0" y="659" width="222" height="53" rx="8" fill="#f4ded2" stroke="#b97857" stroke-width="1.7"/>
+<text x="890" y="693.55" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Modulation(t)</text>
+<circle cx="362" cy="790" r="22" fill="#fff2f1" stroke="#dc676b" stroke-width="1.7"/>
+<text x="362" y="798" fill="#dc676b" font-size="25" font-weight="600" text-anchor="middle">t</text>
+<path d="M362 768 V685 H342" fill="none" stroke="#dc676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
+<path d="M230 837 V746" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M230 745 V713" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<circle cx="692" cy="790" r="22" fill="#fff2f1" stroke="#dc676b" stroke-width="1.7"/>
+<text x="692" y="798" fill="#dc676b" font-size="25" font-weight="600" text-anchor="middle">0</text>
+<path d="M692 768 V685 H672" fill="none" stroke="#dc676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
+<path d="M560 837 V746" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M560 745 V713" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<circle cx="1022" cy="790" r="22" fill="#fff2f1" stroke="#dc676b" stroke-width="1.7"/>
+<text x="1022" y="798" fill="#dc676b" font-size="25" font-weight="600" text-anchor="middle">t</text>
+<path d="M1022 768 V685 H1002" fill="none" stroke="#dc676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
+<path d="M890 837 V746" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M890 745 V713" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="692" y="835" fill="#dc676b" font-size="18" font-weight="500" text-anchor="middle">fixed</text>
+<rect x="146.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
+<rect x="175.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
+<rect x="204.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
+<rect x="233.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
+<rect x="262.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
+<rect x="291.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
+<text x="230" y="894" fill="#547fb3" font-size="23" font-weight="600" text-anchor="middle">Text tokens</text>
+<path d="M230 940 V907" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="476.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
+<rect x="505.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
+<rect x="534.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
+<rect x="563.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
+<rect x="592.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
+<rect x="621.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
+<text x="560" y="894" fill="#4e8e62" font-size="23" font-weight="600" text-anchor="middle">Reference tokens</text>
+<path d="M560 940 V907" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="806.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="835.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="864.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="893.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="922.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<rect x="951.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
+<text x="890" y="894" fill="#b97857" font-size="23" font-weight="600" text-anchor="middle">Target tokens</text>
+<path d="M890 940 V907" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="87" y="870" fill="#263246" font-size="34" font-weight="400" text-anchor="middle">[</text>
+<text x="1033" y="870" fill="#263246" font-size="34" font-weight="400" text-anchor="middle">]</text>
+<rect x="98.0" y="940" width="264" height="50" rx="8" fill="#dce9fc" stroke="#c5cfdb" stroke-width="1.7"/>
+<text x="230" y="972.35" fill="#263246" font-size="21" font-weight="550" text-anchor="middle">Text projection / refiner</text>
+<rect x="428.0" y="940" width="264" height="50" rx="8" fill="#daeddf" stroke="#c5cfdb" stroke-width="1.7"/>
+<text x="560" y="972.35" fill="#263246" font-size="21" font-weight="550" text-anchor="middle">Image projection</text>
+<rect x="758.0" y="940" width="264" height="50" rx="8" fill="#f4ded2" stroke="#c5cfdb" stroke-width="1.7"/>
+<text x="890" y="972.35" fill="#263246" font-size="21" font-weight="550" text-anchor="middle">Image projection</text>
+<rect x="98.0" y="1065" width="264" height="51" rx="8" fill="#dce9fc" stroke="#b4c7e0" stroke-width="1.7"/>
+<text x="230" y="1098.9" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">Text encoder</text>
+<rect x="428.0" y="1065" width="264" height="51" rx="8" fill="#daeddf" stroke="#b4d1bc" stroke-width="1.7"/>
+<text x="560" y="1098.9" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">VAE encoder</text>
+<rect x="758.0" y="1065" width="264" height="51" rx="8" fill="#f4ded2" stroke="#d6b8a8" stroke-width="1.7"/>
+<text x="890" y="1098.9" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">VAE encoder</text>
+<path d="M230 1065 V990" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M560 1065 V990" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="572" y="1034" fill="#4e8e62" font-size="19" font-weight="400" text-anchor="start">clean latent</text>
+<circle cx="890" cy="1027" r="17" fill="white" stroke="#677386" stroke-width="1.8"/>
+<text x="890" y="1035" fill="#263246" font-size="26" font-weight="400" text-anchor="middle">+</text>
+<path d="M890 1065 V1044" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M890 1010 V991" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1012" y="1022" fill="#6e7989" font-size="20" font-weight="400" text-anchor="middle">Noise ε</text>
+<path d="M975 1027 H908" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="963" y="1060" fill="#dc676b" font-size="23" font-weight="600" text-anchor="middle">t</text>
+<path d="M951 1054 L908 1038" fill="none" stroke="#dc676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
+<rect x="98.0" y="1151" width="264" height="52" rx="8" fill="#dce9fc" stroke="#d4dbe3" stroke-width="1.7"/>
+<text x="230" y="1185.4" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">Edit instruction</text>
+<path d="M230 1151 V1117" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="428.0" y="1151" width="264" height="52" rx="8" fill="#daeddf" stroke="#d4dbe3" stroke-width="1.7"/>
+<text x="560" y="1185.4" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">Reference image</text>
+<path d="M560 1151 V1117" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="758.0" y="1151" width="264" height="52" rx="8" fill="#f4ded2" stroke="#d4dbe3" stroke-width="1.7"/>
+<text x="890" y="1185.4" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">Target image</text>
+<path d="M890 1151 V1117" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="890" y="1229" fill="#6e7989" font-size="19" font-weight="400" text-anchor="middle">训练时编码并加噪</text>
+<text x="230" y="1229" fill="#547fb3" font-size="19" font-weight="400" text-anchor="middle">语义条件</text>
+<text x="560" y="1229" fill="#4e8e62" font-size="19" font-weight="400" text-anchor="middle">全程保持 clean</text>
+<text x="1177" y="177" fill="#263246" font-size="26" font-weight="650" text-anchor="start">Attention visibility</text>
+<text x="1177" y="209" fill="#6e7989" font-size="19" font-weight="400" text-anchor="start">行：Query     列：Key / Value</text>
+<text x="1337.0" y="243" fill="#547fb3" font-size="21" font-weight="600" text-anchor="middle">text</text>
+<text x="1275" y="307.0" fill="#547fb3" font-size="21" font-weight="600" text-anchor="end">text</text>
+<rect x="1294" y="256" width="86" height="86" rx="3" fill="#dce9fc" stroke="none" stroke-width="1.7"/>
+<text x="1337.0" y="307.0" fill="#547fb3" font-size="25" font-weight="550" text-anchor="middle">✓</text>
+<rect x="1384" y="256" width="86" height="86" rx="3" fill="#daeddf" stroke="none" stroke-width="1.7"/>
+<text x="1427.0" y="307.0" fill="#4e8e62" font-size="25" font-weight="550" text-anchor="middle">✓</text>
+<rect x="1474" y="256" width="86" height="86" rx="3" fill="#f4ded2" stroke="none" stroke-width="1.7"/>
+<text x="1517.0" y="307.0" fill="#b97857" font-size="25" font-weight="550" text-anchor="middle">✓</text>
+<text x="1427.0" y="243" fill="#4e8e62" font-size="21" font-weight="600" text-anchor="middle">ref</text>
+<text x="1275" y="397.0" fill="#4e8e62" font-size="21" font-weight="600" text-anchor="end">ref</text>
+<rect x="1294" y="346" width="86" height="86" rx="3" fill="#f0f2f5" stroke="none" stroke-width="1.7"/>
+<text x="1337.0" y="397.0" fill="#b1bac7" font-size="25" font-weight="550" text-anchor="middle">—</text>
+<rect x="1384" y="346" width="86" height="86" rx="3" fill="#daeddf" stroke="none" stroke-width="1.7"/>
+<text x="1427.0" y="397.0" fill="#4e8e62" font-size="25" font-weight="550" text-anchor="middle">✓</text>
+<rect x="1474" y="346" width="86" height="86" rx="3" fill="#f0f2f5" stroke="none" stroke-width="1.7"/>
+<text x="1517.0" y="397.0" fill="#b1bac7" font-size="25" font-weight="550" text-anchor="middle">—</text>
+<text x="1517.0" y="243" fill="#b97857" font-size="21" font-weight="600" text-anchor="middle">target</text>
+<text x="1275" y="487.0" fill="#b97857" font-size="21" font-weight="600" text-anchor="end">target</text>
+<rect x="1294" y="436" width="86" height="86" rx="3" fill="#dce9fc" stroke="none" stroke-width="1.7"/>
+<text x="1337.0" y="487.0" fill="#547fb3" font-size="25" font-weight="550" text-anchor="middle">✓</text>
+<rect x="1384" y="436" width="86" height="86" rx="3" fill="#daeddf" stroke="none" stroke-width="1.7"/>
+<text x="1427.0" y="487.0" fill="#4e8e62" font-size="25" font-weight="550" text-anchor="middle">✓</text>
+<rect x="1474" y="436" width="86" height="86" rx="3" fill="#f4ded2" stroke="none" stroke-width="1.7"/>
+<text x="1517.0" y="487.0" fill="#b97857" font-size="25" font-weight="550" text-anchor="middle">✓</text>
+<path d="M1110 581 H1170" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
+<text x="1141" y="568" fill="#4e8e62" font-size="16" font-weight="500" text-anchor="middle">保存</text>
+<path d="M1170 616 H1110" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
+<text x="1141" y="641" fill="#4e8e62" font-size="16" font-weight="500" text-anchor="middle">读取</text>
+<rect x="1025" y="554" width="83" height="80" rx="5" fill="#eff8f1" stroke="#9bbda4" stroke-width="1.7"/>
+<text x="1066" y="578" fill="#4e8e62" font-size="18" font-weight="600" text-anchor="middle">ref</text>
+<text x="1066" y="605" fill="#4e8e62" font-size="19" font-weight="600" text-anchor="middle">K / V</text>
+<path d="M671 600 H689 V558 H1066 V554" fill="none" stroke="#4e8e62" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
+<path d="M1066 634 V649 H1090 V507 H1018" fill="none" stroke="#4e8e62" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
+<rect x="1180" y="552" width="441" height="130" rx="10" fill="#edf7ef" stroke="#8eb89b" stroke-width="2"/>
+<text x="1400" y="588" fill="#4e8e62" font-size="23" font-weight="650" text-anchor="middle">Layer l · Reference KV cache</text>
+<text x="1400" y="624" fill="#4e8e62" font-size="27" font-weight="600" text-anchor="middle">K_ref[l]  /  V_ref[l]</text>
+<text x="1400" y="655" fill="#4e8e62" font-size="19" font-weight="400" text-anchor="middle">ref 分支 t = 0 · 每层预计算一次</text>
+<path d="M1400 683 V736" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
+<text x="1400" y="773" fill="#4e8e62" font-size="22" font-weight="550" text-anchor="middle">同一份逐层缓存，跨去噪步复用</text>
+<rect x="1180" y="800" width="200" height="82" rx="8" fill="#f7f9fc" stroke="#c7d0dd" stroke-width="1.7"/>
+<rect x="1420" y="800" width="200" height="82" rx="8" fill="#f7f9fc" stroke="#c7d0dd" stroke-width="1.7"/>
+<text x="1280" y="834" fill="#263246" font-size="24" font-weight="600" text-anchor="middle">Step k</text>
+<text x="1280" y="864" fill="#6e7989" font-size="20" font-weight="400" text-anchor="middle">text + target</text>
+<text x="1520" y="834" fill="#263246" font-size="24" font-weight="600" text-anchor="middle">Step k + 1</text>
+<text x="1520" y="864" fill="#6e7989" font-size="20" font-weight="400" text-anchor="middle">text + target</text>
+<path d="M1400 783 V792 H1280 V799" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
+<path d="M1400 792 H1520 V799" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
+<text x="1400" y="923" fill="#6e7989" font-size="22" font-weight="400" text-anchor="middle">参考分支只读取 ref，</text>
+<text x="1400" y="954" fill="#6e7989" font-size="22" font-weight="400" text-anchor="middle">不依赖当前目标状态与文本。</text>
+<rect x="1180" y="1001" width="441" height="202" rx="10" fill="#fafbfd" stroke="#e2e6ec" stroke-width="1.7"/>
+<rect x="1205" y="1026" width="18" height="18" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
+<text x="1237" y="1043" fill="#263246" font-size="20" font-weight="400" text-anchor="start">方块：序列中的 token</text>
+<circle cx="1214" cy="1083" r="12" fill="#fff2f1" stroke="#dc676b" stroke-width="1.5"/>
+<text x="1237" y="1090" fill="#dc676b" font-size="20" font-weight="400" text-anchor="start">红色输入：调制时间</text>
+<text x="1205" y="1137" fill="#6e7989" font-size="20" font-weight="400" text-anchor="start">训练：仅 target 计算 V-loss</text>
+<text x="1205" y="1174" fill="#6e7989" font-size="20" font-weight="400" text-anchor="start">推理：target 从噪声开始</text>
 </g></svg>
