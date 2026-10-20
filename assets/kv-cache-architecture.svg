@@ -1,191 +1,89 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 1280" role="img" aria-labelledby="title desc">
-<title id="title">MOSS-Image-Edit: tokens, time conditioning and reference KV cache</title>
-<desc id="desc">Text tokens come from the text encoder, reference tokens from clean VAE latents, and target tokens from noisy VAE latents. In sequence order text, ref, target, their modulation times are t, zero, t. All use shared Transformer weights. Reference queries only read reference keys and values. Text and target queries read all tokens. Each layer reference K/V is computed once and reused across denoising steps.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1090" viewBox="0 0 1400 1090" role="img" aria-labelledby="title desc">
+<title id="title">MOSS-Image-Edit — token flow and time conditioning</title>
+<desc id="desc">Three token groups are arranged as text, reference and target. Each follows a separate vertical encoding path into the shared MOSS Transformer. Red timestep inputs are t for text, zero for reference and t for target. The backbone uses the corresponding modulation at every layer, and outputs target velocity only.</desc>
 <defs>
-<marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#677386" stroke-width="1.6"/></marker>
-<marker id="time" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#dc676b" stroke-width="1.6"/></marker>
-<marker id="cache" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#4e8e62" stroke-width="1.6"/></marker>
+<marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M2 1.5 L7 4.5 L2 7.5" fill="none" stroke="#8591a2" stroke-width="1.5"/></marker>
+<marker id="time" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M2 1.5 L7 4.5 L2 7.5" fill="none" stroke="#ce6266" stroke-width="1.5"/></marker>
+<marker id="cache" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M2 1.5 L7 4.5 L2 7.5" fill="none" stroke="#528463" stroke-width="1.5"/></marker>
 </defs>
-<rect width="1680" height="1280" fill="white"/>
+<rect width="1400" height="1090" fill="white"/>
 <g font-family="Inter, Noto Sans CJK SC, sans-serif">
-<text x="52" y="63" fill="#263246" font-size="42" font-weight="700" text-anchor="start">MOSS-Image-Edit</text>
-<text x="52" y="104" fill="#6e7989" font-size="24" font-weight="400" text-anchor="start">Token 来源、时间调制与逐层参考 KV 复用</text>
-<text x="1625" y="61" fill="#4e8e62" font-size="19" font-weight="650" text-anchor="end">REFERENCE KV CACHE</text>
-<path d="M52 128 H1628" fill="none" stroke="#e1e6ec" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="806.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="835.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="864.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="893.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="922.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="951.5" y="153" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<text x="778" y="170" fill="#b97857" font-size="21" font-weight="550" text-anchor="end">V prediction</text>
-<rect x="773.0" y="208" width="234" height="49" rx="8" fill="#f4ded2" stroke="#d6b8a8" stroke-width="1.7"/>
-<text x="890" y="240.55" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Output projection</text>
-<path d="M890 208 V178" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M890 299 V257" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="71" y="299" width="1037" height="446" rx="12" fill="#fafbfd" stroke="#aab6c6" stroke-width="2"/>
-<text x="99" y="334" fill="#263246" font-size="28" font-weight="650" text-anchor="start">MOSS Transformer block</text>
-<text x="800" y="333" fill="#6e7989" font-size="23" font-weight="500" text-anchor="end">× L · shared weights</text>
-<text x="99" y="357" fill="#6e7989" font-size="17" font-weight="400" text-anchor="start">时间调制用于 attention、MLP 与残差门控</text>
-<rect x="102.5" y="372" width="915" height="59" rx="8" fill="#edf1f7" stroke="#b9c5d5" stroke-width="1.7"/>
-<text x="560" y="410.25" fill="#263246" font-size="25" font-weight="550" text-anchor="middle">Feed-forward + residual</text>
-<path d="M890 372 V299" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M230 471 V432" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M560 471 V432" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M890 471 V432" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="102.5" y="471" width="915" height="69" rx="8" fill="#edf1f7" stroke="#b9c5d5" stroke-width="1.7"/>
-<text x="560" y="514.6" fill="#263246" font-size="26" font-weight="550" text-anchor="middle">Masked joint attention</text>
-<rect x="119.0" y="579" width="222" height="44" rx="8" fill="#dce9fc" stroke="#547fb3" stroke-width="1.7"/>
-<text x="230" y="609.05" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Q / K / V</text>
-<path d="M230 579 V540" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M230 659 V623" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="449.0" y="579" width="222" height="44" rx="8" fill="#daeddf" stroke="#4e8e62" stroke-width="1.7"/>
-<text x="560" y="609.05" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Q / K / V</text>
-<path d="M560 579 V540" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M560 659 V623" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="779.0" y="579" width="222" height="44" rx="8" fill="#f4ded2" stroke="#b97857" stroke-width="1.7"/>
-<text x="890" y="609.05" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Q / K / V</text>
-<path d="M890 579 V540" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M890 659 V623" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="119.0" y="659" width="222" height="53" rx="8" fill="#dce9fc" stroke="#547fb3" stroke-width="1.7"/>
-<text x="230" y="693.55" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Modulation(t)</text>
-<rect x="449.0" y="659" width="222" height="53" rx="8" fill="#daeddf" stroke="#4e8e62" stroke-width="1.7"/>
-<text x="560" y="693.55" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Modulation(0)</text>
-<rect x="779.0" y="659" width="222" height="53" rx="8" fill="#f4ded2" stroke="#b97857" stroke-width="1.7"/>
-<text x="890" y="693.55" fill="#263246" font-size="23" font-weight="550" text-anchor="middle">Modulation(t)</text>
-<circle cx="362" cy="790" r="22" fill="#fff2f1" stroke="#dc676b" stroke-width="1.7"/>
-<text x="362" y="798" fill="#dc676b" font-size="25" font-weight="600" text-anchor="middle">t</text>
-<path d="M362 768 V685 H342" fill="none" stroke="#dc676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
-<path d="M230 837 V746" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M230 745 V713" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<circle cx="692" cy="790" r="22" fill="#fff2f1" stroke="#dc676b" stroke-width="1.7"/>
-<text x="692" y="798" fill="#dc676b" font-size="25" font-weight="600" text-anchor="middle">0</text>
-<path d="M692 768 V685 H672" fill="none" stroke="#dc676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
-<path d="M560 837 V746" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M560 745 V713" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<circle cx="1022" cy="790" r="22" fill="#fff2f1" stroke="#dc676b" stroke-width="1.7"/>
-<text x="1022" y="798" fill="#dc676b" font-size="25" font-weight="600" text-anchor="middle">t</text>
-<path d="M1022 768 V685 H1002" fill="none" stroke="#dc676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
-<path d="M890 837 V746" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M890 745 V713" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<text x="692" y="835" fill="#dc676b" font-size="18" font-weight="500" text-anchor="middle">fixed</text>
-<rect x="146.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
-<rect x="175.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
-<rect x="204.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
-<rect x="233.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
-<rect x="262.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
-<rect x="291.5" y="837" width="22" height="22" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
-<text x="230" y="894" fill="#547fb3" font-size="23" font-weight="600" text-anchor="middle">Text tokens</text>
-<path d="M230 940 V907" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="476.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
-<rect x="505.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
-<rect x="534.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
-<rect x="563.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
-<rect x="592.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
-<rect x="621.5" y="837" width="22" height="22" rx="2" fill="#4e8e62" stroke="none" stroke-width="1.7"/>
-<text x="560" y="894" fill="#4e8e62" font-size="23" font-weight="600" text-anchor="middle">Reference tokens</text>
-<path d="M560 940 V907" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="806.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="835.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="864.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="893.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="922.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<rect x="951.5" y="837" width="22" height="22" rx="2" fill="#b97857" stroke="none" stroke-width="1.7"/>
-<text x="890" y="894" fill="#b97857" font-size="23" font-weight="600" text-anchor="middle">Target tokens</text>
-<path d="M890 940 V907" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<text x="87" y="870" fill="#263246" font-size="34" font-weight="400" text-anchor="middle">[</text>
-<text x="1033" y="870" fill="#263246" font-size="34" font-weight="400" text-anchor="middle">]</text>
-<rect x="98.0" y="940" width="264" height="50" rx="8" fill="#dce9fc" stroke="#c5cfdb" stroke-width="1.7"/>
-<text x="230" y="972.35" fill="#263246" font-size="21" font-weight="550" text-anchor="middle">Text projection / refiner</text>
-<rect x="428.0" y="940" width="264" height="50" rx="8" fill="#daeddf" stroke="#c5cfdb" stroke-width="1.7"/>
-<text x="560" y="972.35" fill="#263246" font-size="21" font-weight="550" text-anchor="middle">Image projection</text>
-<rect x="758.0" y="940" width="264" height="50" rx="8" fill="#f4ded2" stroke="#c5cfdb" stroke-width="1.7"/>
-<text x="890" y="972.35" fill="#263246" font-size="21" font-weight="550" text-anchor="middle">Image projection</text>
-<rect x="98.0" y="1065" width="264" height="51" rx="8" fill="#dce9fc" stroke="#b4c7e0" stroke-width="1.7"/>
-<text x="230" y="1098.9" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">Text encoder</text>
-<rect x="428.0" y="1065" width="264" height="51" rx="8" fill="#daeddf" stroke="#b4d1bc" stroke-width="1.7"/>
-<text x="560" y="1098.9" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">VAE encoder</text>
-<rect x="758.0" y="1065" width="264" height="51" rx="8" fill="#f4ded2" stroke="#d6b8a8" stroke-width="1.7"/>
-<text x="890" y="1098.9" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">VAE encoder</text>
-<path d="M230 1065 V990" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M560 1065 V990" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<text x="572" y="1034" fill="#4e8e62" font-size="19" font-weight="400" text-anchor="start">clean latent</text>
-<circle cx="890" cy="1027" r="17" fill="white" stroke="#677386" stroke-width="1.8"/>
-<text x="890" y="1035" fill="#263246" font-size="26" font-weight="400" text-anchor="middle">+</text>
-<path d="M890 1065 V1044" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<path d="M890 1010 V991" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<text x="1012" y="1022" fill="#6e7989" font-size="20" font-weight="400" text-anchor="middle">Noise ε</text>
-<path d="M975 1027 H908" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<text x="963" y="1060" fill="#dc676b" font-size="23" font-weight="600" text-anchor="middle">t</text>
-<path d="M951 1054 L908 1038" fill="none" stroke="#dc676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
-<rect x="98.0" y="1151" width="264" height="52" rx="8" fill="#dce9fc" stroke="#d4dbe3" stroke-width="1.7"/>
-<text x="230" y="1185.4" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">Edit instruction</text>
-<path d="M230 1151 V1117" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="428.0" y="1151" width="264" height="52" rx="8" fill="#daeddf" stroke="#d4dbe3" stroke-width="1.7"/>
-<text x="560" y="1185.4" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">Reference image</text>
-<path d="M560 1151 V1117" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<rect x="758.0" y="1151" width="264" height="52" rx="8" fill="#f4ded2" stroke="#d4dbe3" stroke-width="1.7"/>
-<text x="890" y="1185.4" fill="#263246" font-size="24" font-weight="550" text-anchor="middle">Target image</text>
-<path d="M890 1151 V1117" fill="none" stroke="#677386" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
-<text x="890" y="1229" fill="#6e7989" font-size="19" font-weight="400" text-anchor="middle">训练时编码并加噪</text>
-<text x="230" y="1229" fill="#547fb3" font-size="19" font-weight="400" text-anchor="middle">语义条件</text>
-<text x="560" y="1229" fill="#4e8e62" font-size="19" font-weight="400" text-anchor="middle">全程保持 clean</text>
-<text x="1177" y="177" fill="#263246" font-size="26" font-weight="650" text-anchor="start">Attention visibility</text>
-<text x="1177" y="209" fill="#6e7989" font-size="19" font-weight="400" text-anchor="start">行：Query     列：Key / Value</text>
-<text x="1337.0" y="243" fill="#547fb3" font-size="21" font-weight="600" text-anchor="middle">text</text>
-<text x="1275" y="307.0" fill="#547fb3" font-size="21" font-weight="600" text-anchor="end">text</text>
-<rect x="1294" y="256" width="86" height="86" rx="3" fill="#dce9fc" stroke="none" stroke-width="1.7"/>
-<text x="1337.0" y="307.0" fill="#547fb3" font-size="25" font-weight="550" text-anchor="middle">✓</text>
-<rect x="1384" y="256" width="86" height="86" rx="3" fill="#daeddf" stroke="none" stroke-width="1.7"/>
-<text x="1427.0" y="307.0" fill="#4e8e62" font-size="25" font-weight="550" text-anchor="middle">✓</text>
-<rect x="1474" y="256" width="86" height="86" rx="3" fill="#f4ded2" stroke="none" stroke-width="1.7"/>
-<text x="1517.0" y="307.0" fill="#b97857" font-size="25" font-weight="550" text-anchor="middle">✓</text>
-<text x="1427.0" y="243" fill="#4e8e62" font-size="21" font-weight="600" text-anchor="middle">ref</text>
-<text x="1275" y="397.0" fill="#4e8e62" font-size="21" font-weight="600" text-anchor="end">ref</text>
-<rect x="1294" y="346" width="86" height="86" rx="3" fill="#f0f2f5" stroke="none" stroke-width="1.7"/>
-<text x="1337.0" y="397.0" fill="#b1bac7" font-size="25" font-weight="550" text-anchor="middle">—</text>
-<rect x="1384" y="346" width="86" height="86" rx="3" fill="#daeddf" stroke="none" stroke-width="1.7"/>
-<text x="1427.0" y="397.0" fill="#4e8e62" font-size="25" font-weight="550" text-anchor="middle">✓</text>
-<rect x="1474" y="346" width="86" height="86" rx="3" fill="#f0f2f5" stroke="none" stroke-width="1.7"/>
-<text x="1517.0" y="397.0" fill="#b1bac7" font-size="25" font-weight="550" text-anchor="middle">—</text>
-<text x="1517.0" y="243" fill="#b97857" font-size="21" font-weight="600" text-anchor="middle">target</text>
-<text x="1275" y="487.0" fill="#b97857" font-size="21" font-weight="600" text-anchor="end">target</text>
-<rect x="1294" y="436" width="86" height="86" rx="3" fill="#dce9fc" stroke="none" stroke-width="1.7"/>
-<text x="1337.0" y="487.0" fill="#547fb3" font-size="25" font-weight="550" text-anchor="middle">✓</text>
-<rect x="1384" y="436" width="86" height="86" rx="3" fill="#daeddf" stroke="none" stroke-width="1.7"/>
-<text x="1427.0" y="487.0" fill="#4e8e62" font-size="25" font-weight="550" text-anchor="middle">✓</text>
-<rect x="1474" y="436" width="86" height="86" rx="3" fill="#f4ded2" stroke="none" stroke-width="1.7"/>
-<text x="1517.0" y="487.0" fill="#b97857" font-size="25" font-weight="550" text-anchor="middle">✓</text>
-<path d="M1110 581 H1170" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
-<text x="1141" y="568" fill="#4e8e62" font-size="16" font-weight="500" text-anchor="middle">保存</text>
-<path d="M1170 616 H1110" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
-<text x="1141" y="641" fill="#4e8e62" font-size="16" font-weight="500" text-anchor="middle">读取</text>
-<rect x="1025" y="554" width="83" height="80" rx="5" fill="#eff8f1" stroke="#9bbda4" stroke-width="1.7"/>
-<text x="1066" y="578" fill="#4e8e62" font-size="18" font-weight="600" text-anchor="middle">ref</text>
-<text x="1066" y="605" fill="#4e8e62" font-size="19" font-weight="600" text-anchor="middle">K / V</text>
-<path d="M671 600 H689 V558 H1066 V554" fill="none" stroke="#4e8e62" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
-<path d="M1066 634 V649 H1090 V507 H1018" fill="none" stroke="#4e8e62" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
-<rect x="1180" y="552" width="441" height="130" rx="10" fill="#edf7ef" stroke="#8eb89b" stroke-width="2"/>
-<text x="1400" y="588" fill="#4e8e62" font-size="23" font-weight="650" text-anchor="middle">Layer l · Reference KV cache</text>
-<text x="1400" y="624" fill="#4e8e62" font-size="27" font-weight="600" text-anchor="middle">K_ref[l]  /  V_ref[l]</text>
-<text x="1400" y="655" fill="#4e8e62" font-size="19" font-weight="400" text-anchor="middle">ref 分支 t = 0 · 每层预计算一次</text>
-<path d="M1400 683 V736" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
-<text x="1400" y="773" fill="#4e8e62" font-size="22" font-weight="550" text-anchor="middle">同一份逐层缓存，跨去噪步复用</text>
-<rect x="1180" y="800" width="200" height="82" rx="8" fill="#f7f9fc" stroke="#c7d0dd" stroke-width="1.7"/>
-<rect x="1420" y="800" width="200" height="82" rx="8" fill="#f7f9fc" stroke="#c7d0dd" stroke-width="1.7"/>
-<text x="1280" y="834" fill="#263246" font-size="24" font-weight="600" text-anchor="middle">Step k</text>
-<text x="1280" y="864" fill="#6e7989" font-size="20" font-weight="400" text-anchor="middle">text + target</text>
-<text x="1520" y="834" fill="#263246" font-size="24" font-weight="600" text-anchor="middle">Step k + 1</text>
-<text x="1520" y="864" fill="#6e7989" font-size="20" font-weight="400" text-anchor="middle">text + target</text>
-<path d="M1400 783 V792 H1280 V799" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
-<path d="M1400 792 H1520 V799" fill="none" stroke="#4e8e62" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#cache)"/>
-<text x="1400" y="923" fill="#6e7989" font-size="22" font-weight="400" text-anchor="middle">参考分支只读取 ref，</text>
-<text x="1400" y="954" fill="#6e7989" font-size="22" font-weight="400" text-anchor="middle">不依赖当前目标状态与文本。</text>
-<rect x="1180" y="1001" width="441" height="202" rx="10" fill="#fafbfd" stroke="#e2e6ec" stroke-width="1.7"/>
-<rect x="1205" y="1026" width="18" height="18" rx="2" fill="#547fb3" stroke="none" stroke-width="1.7"/>
-<text x="1237" y="1043" fill="#263246" font-size="20" font-weight="400" text-anchor="start">方块：序列中的 token</text>
-<circle cx="1214" cy="1083" r="12" fill="#fff2f1" stroke="#dc676b" stroke-width="1.5"/>
-<text x="1237" y="1090" fill="#dc676b" font-size="20" font-weight="400" text-anchor="start">红色输入：调制时间</text>
-<text x="1205" y="1137" fill="#6e7989" font-size="20" font-weight="400" text-anchor="start">训练：仅 target 计算 V-loss</text>
-<text x="1205" y="1174" fill="#6e7989" font-size="20" font-weight="400" text-anchor="start">推理：target 从噪声开始</text>
+<text x="64" y="64" fill="#28364a" font-size="32" font-weight="650" text-anchor="start">Token flow &amp; time conditioning</text>
+<text x="64" y="105" fill="#778294" font-size="23" font-weight="400" text-anchor="start">同一主干，三类 token，两种时间条件</text>
+<rect x="995.0" y="154" width="250" height="58" rx="9" fill="#faebe0" stroke="#e1c9b7" stroke-width="1.5"/>
+<text x="1120" y="192.1" fill="#28364a" font-size="26" font-weight="550" text-anchor="middle">Target velocity</text>
+<rect x="110" y="278" width="1180" height="242" rx="12" fill="#f9fafc" stroke="#b9c4d2" stroke-width="1.8"/>
+<text x="150" y="316" fill="#28364a" font-size="27" font-weight="650" text-anchor="start">Shared MOSS Transformer</text>
+<text x="1250" y="316" fill="#778294" font-size="27" font-weight="550" text-anchor="end">× L</text>
+<rect x="160.0" y="346" width="1080" height="66" rx="9" fill="#edf1f7" stroke="#c6d0de" stroke-width="1.5"/>
+<text x="700" y="388.1" fill="#28364a" font-size="26" font-weight="550" text-anchor="middle">Attention + feed-forward</text>
+<path d="M1120 346 V213" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="175.0" y="452" width="210" height="49" rx="9" fill="#e6eefb" stroke="#547dae" stroke-width="1.5"/>
+<text x="280" y="485.25" fill="#28364a" font-size="25" font-weight="550" text-anchor="middle">Mod(t)</text>
+<path d="M280 452 V413" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="595.0" y="452" width="210" height="49" rx="9" fill="#e5f2e9" stroke="#528463" stroke-width="1.5"/>
+<text x="700" y="485.25" fill="#28364a" font-size="25" font-weight="550" text-anchor="middle">Mod(0)</text>
+<path d="M700 452 V413" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="1015.0" y="452" width="210" height="49" rx="9" fill="#faebe0" stroke="#b27b57" stroke-width="1.5"/>
+<text x="1120" y="485.25" fill="#28364a" font-size="25" font-weight="550" text-anchor="middle">Mod(t)</text>
+<path d="M1120 452 V413" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<circle cx="426" cy="574" r="24" fill="#fff6f5" stroke="#ce6266" stroke-width="1.5"/>
+<text x="426" y="582" fill="#ce6266" font-size="25" font-weight="600" text-anchor="middle">t</text>
+<path d="M426 550 V477 H387" fill="none" stroke="#ce6266" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
+<path d="M280 640 V502" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<circle cx="846" cy="574" r="24" fill="#fff6f5" stroke="#ce6266" stroke-width="1.5"/>
+<text x="846" y="582" fill="#ce6266" font-size="25" font-weight="600" text-anchor="middle">0</text>
+<path d="M846 550 V477 H807" fill="none" stroke="#ce6266" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
+<path d="M700 640 V502" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<circle cx="1266" cy="574" r="24" fill="#fff6f5" stroke="#ce6266" stroke-width="1.5"/>
+<text x="1266" y="582" fill="#ce6266" font-size="25" font-weight="600" text-anchor="middle">t</text>
+<path d="M1266 550 V477 H1227" fill="none" stroke="#ce6266" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#time)"/>
+<path d="M1120 640 V502" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="846" y="620" fill="#ce6266" font-size="20" font-weight="450" text-anchor="middle">fixed</text>
+<rect x="197.0" y="640" width="21" height="21" rx="2" fill="#547dae" stroke="none" stroke-width="1.5"/>
+<rect x="226.0" y="640" width="21" height="21" rx="2" fill="#547dae" stroke="none" stroke-width="1.5"/>
+<rect x="255.0" y="640" width="21" height="21" rx="2" fill="#547dae" stroke="none" stroke-width="1.5"/>
+<rect x="284.0" y="640" width="21" height="21" rx="2" fill="#547dae" stroke="none" stroke-width="1.5"/>
+<rect x="313.0" y="640" width="21" height="21" rx="2" fill="#547dae" stroke="none" stroke-width="1.5"/>
+<rect x="342.0" y="640" width="21" height="21" rx="2" fill="#547dae" stroke="none" stroke-width="1.5"/>
+<text x="280" y="704" fill="#547dae" font-size="26" font-weight="600" text-anchor="middle">Text tokens</text>
+<path d="M280 759 V724" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="617.0" y="640" width="21" height="21" rx="2" fill="#528463" stroke="none" stroke-width="1.5"/>
+<rect x="646.0" y="640" width="21" height="21" rx="2" fill="#528463" stroke="none" stroke-width="1.5"/>
+<rect x="675.0" y="640" width="21" height="21" rx="2" fill="#528463" stroke="none" stroke-width="1.5"/>
+<rect x="704.0" y="640" width="21" height="21" rx="2" fill="#528463" stroke="none" stroke-width="1.5"/>
+<rect x="733.0" y="640" width="21" height="21" rx="2" fill="#528463" stroke="none" stroke-width="1.5"/>
+<rect x="762.0" y="640" width="21" height="21" rx="2" fill="#528463" stroke="none" stroke-width="1.5"/>
+<text x="700" y="704" fill="#528463" font-size="26" font-weight="600" text-anchor="middle">Reference tokens</text>
+<path d="M700 759 V724" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="1037.0" y="640" width="21" height="21" rx="2" fill="#b27b57" stroke="none" stroke-width="1.5"/>
+<rect x="1066.0" y="640" width="21" height="21" rx="2" fill="#b27b57" stroke="none" stroke-width="1.5"/>
+<rect x="1095.0" y="640" width="21" height="21" rx="2" fill="#b27b57" stroke="none" stroke-width="1.5"/>
+<rect x="1124.0" y="640" width="21" height="21" rx="2" fill="#b27b57" stroke="none" stroke-width="1.5"/>
+<rect x="1153.0" y="640" width="21" height="21" rx="2" fill="#b27b57" stroke="none" stroke-width="1.5"/>
+<rect x="1182.0" y="640" width="21" height="21" rx="2" fill="#b27b57" stroke="none" stroke-width="1.5"/>
+<text x="1120" y="704" fill="#b27b57" font-size="26" font-weight="600" text-anchor="middle">Target tokens</text>
+<path d="M1120 759 V724" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="137.0" y="760" width="286" height="58" rx="9" fill="#e6eefb" stroke="#d6dde6" stroke-width="1.5"/>
+<text x="280" y="797.4" fill="#28364a" font-size="24" font-weight="550" text-anchor="middle">Projection / refiner</text>
+<rect x="557.0" y="760" width="286" height="58" rx="9" fill="#e5f2e9" stroke="#d6dde6" stroke-width="1.5"/>
+<text x="700" y="797.4" fill="#28364a" font-size="24" font-weight="550" text-anchor="middle">Image projection</text>
+<rect x="977.0" y="760" width="286" height="58" rx="9" fill="#faebe0" stroke="#d6dde6" stroke-width="1.5"/>
+<text x="1120" y="797.4" fill="#28364a" font-size="24" font-weight="550" text-anchor="middle">Image projection</text>
+<rect x="137.0" y="871" width="286" height="58" rx="9" fill="#e6eefb" stroke="#d6dde6" stroke-width="1.5"/>
+<text x="280" y="908.75" fill="#28364a" font-size="25" font-weight="550" text-anchor="middle">Text encoder</text>
+<rect x="557.0" y="871" width="286" height="58" rx="9" fill="#e5f2e9" stroke="#d6dde6" stroke-width="1.5"/>
+<text x="700" y="908.75" fill="#28364a" font-size="25" font-weight="550" text-anchor="middle">VAE encoder</text>
+<path d="M280 871 V819" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M700 871 V819" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M1120 970 V819" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="137.0" y="970" width="286" height="58" rx="9" fill="#e6eefb" stroke="#d6dde6" stroke-width="1.5"/>
+<text x="280" y="1007.4" fill="#28364a" font-size="24" font-weight="550" text-anchor="middle">Edit instruction</text>
+<rect x="557.0" y="970" width="286" height="58" rx="9" fill="#e5f2e9" stroke="#d6dde6" stroke-width="1.5"/>
+<text x="700" y="1007.4" fill="#28364a" font-size="24" font-weight="550" text-anchor="middle">Reference image</text>
+<rect x="977.0" y="970" width="286" height="58" rx="9" fill="#faebe0" stroke="#d6dde6" stroke-width="1.5"/>
+<text x="1120" y="1007.4" fill="#28364a" font-size="24" font-weight="550" text-anchor="middle">Noisy target latent</text>
+<path d="M280 970 V930" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M700 970 V930" fill="none" stroke="#8591a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1169" y="904" fill="#b27b57" font-size="27" font-weight="500" text-anchor="middle">z_t</text>
 </g></svg>

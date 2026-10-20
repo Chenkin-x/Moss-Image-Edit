@@ -23,14 +23,20 @@
 图像编辑中，参考图在整个去噪过程中保持不变。我们让它的**逐层特征也保持不变**：ref 使用固定时间调制，只读取 ref；text 与 target 沿用当前时间调制，并读取参考图提供的 K/V。
 
 <p align="center">
-  <img src="assets/kv-cache-architecture.png" alt="MOSS-Image-Edit 数据流：文本编码、参考图 VAE 编码、目标图 VAE 编码与加噪分别形成蓝、绿、橙三类 token；红色时间输入按 t、0、t 调制共享 Transformer。ref 只读取 ref，并将每层 K/V 保存为缓存，供后续去噪步读取。" width="1680">
+  <img src="assets/kv-cache-architecture.png" alt="Token 与时间输入：文本、参考图、加噪目标 latent 分别形成 text、ref、target token，使用 t、0、t 调制共享的 MOSS Transformer。" width="1400">
 </p>
 
 <p align="center"><sub><a href="assets/kv-cache-architecture.png">查看高清图</a> · <a href="assets/kv-cache-architecture.svg">SVG 源图</a></sub></p>
 
-图中方块按 `[text, ref, target]` 排列，颜色贯穿各自的编码与处理路径。红色输入标出每类 token 使用的调制时间；右侧展示注意力可见关系，以及逐层参考 K/V 的保存和复用。
+三列依次是 `[text, ref, target]`，红色输入标出各自的调制时间。target 的输入是当前去噪步的加噪 latent。
 
 **时间调制分离。** 两条数据流共享 MOSS 主干权重。ref 的时间固定为 `0`，通过时间网络得到固定的 shift、scale 和 gate；text 与 target 使用当前 `t`，随去噪步骤更新调制。
+
+<p align="center">
+  <img src="assets/reference-kv-cache.png" alt="注意力与缓存：ref query 只读取 ref，text 和 target query 读取全部 token。参考分支在 t=0 时计算一次，为每层保存 K/V，后续去噪步读取对应层的缓存。" width="1400">
+</p>
+
+<p align="center"><sub><a href="assets/reference-kv-cache.png">查看缓存示意图</a> · <a href="assets/reference-kv-cache.svg">SVG 源图</a></sub></p>
 
 **注意力隔离。** token 顺序为 `[text, ref, target]`。ref 的 query 只访问 ref 的 key/value；text 和 target 的 query 可以访问全部 token。这样，ref 的隐藏状态只依赖参考图本身，text 与 target 仍然可以充分利用参考信息。
 
