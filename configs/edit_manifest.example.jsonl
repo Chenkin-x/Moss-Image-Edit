@@ -1,0 +1,2 @@
+{"id":"outfit-0001","instruction":"Keep the character in image 1, and dress her in the outfit shown in image 2.","source_images":["images/character.png","images/outfit.png"],"target_image":"images/edited.png"}
+{"id":"single-0002","instruction":"Change the background to a sunny beach, preserving the character.","source_images":["images/source.png"],"target_image":"images/target.png"}

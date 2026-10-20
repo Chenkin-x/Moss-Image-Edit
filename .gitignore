@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+models/
+data/
+data_index/
+cache/
+output/
+wandb/
+*.log
+.env
+.DS_Store

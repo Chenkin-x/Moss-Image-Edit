@@ -1,0 +1,14 @@
+torch==2.11.0
+diffusers @ git+https://github.com/huggingface/diffusers.git@c943837899b16cbae2f619b8dd4f7bb6f07dd81a
+transformers==5.5.3
+accelerate==1.14.0
+deepspeed==0.19.6
+flash-attn-4==4.0.0b35
+nvidia-cutlass-dsl==4.8.0
+optimum-quanto==0.2.7
+pylance==12.0.0
+safetensors==0.8.0
+Pillow==12.2.0
+numpy==1.26.4
+packaging
+wandb==0.30.0

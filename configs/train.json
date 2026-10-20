@@ -1,0 +1,78 @@
+{
+  "snapshot_dir": "../models/MOSS-Image-SFT",
+  "output_dir": "../output/moss-edit",
+  "max_edge": 256,
+  "max_ref_images": 1,
+  "max_sequence_length": 4096,
+  "vae_dtype": "float32",
+  "device": "cuda",
+  "dtype": "bfloat16",
+  "lora_rank": 64,
+  "lora_alpha": 64,
+  "lora_dropout": 0.0,
+  "lora_dtype": "bfloat16",
+  "gradient_checkpointing": true,
+  "max_steps": 10000,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "max_grad_norm": 0.0,
+  "cond_dropout": 0.1,
+  "training_shift": 1.0,
+  "inference_shift": 5.0,
+  "num_workers": 4,
+  "save_every": 1000,
+  "seed": 42,
+  "wandb": {
+    "enabled": true,
+    "project": "viola",
+    "name": "moss-edit-r64-zero2-256"
+  },
+  "noob_root": "../data/noob2",
+  "conceptedit_root": "../data/ConceptEdit-12M-webp90",
+  "data_index": "../data_index",
+  "micro_batch_size": 32,
+  "gradient_accumulation_steps": 1,
+  "global_batch_size": 128,
+  "warmup_steps": 1000,
+  "lr_schedule": "constant_with_warmup",
+  "time_sampling": "logit_normal",
+  "time_mean": 0.0,
+  "time_std": 1.0,
+  "prefetch_factor": 4,
+  "validation_keys": [
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      10
+    ],
+    [
+      1,
+      20
+    ],
+    [
+      1,
+      30
+    ]
+  ],
+  "conceptedit_probability": 0.5,
+  "encode_steps_per_chunk": 2,
+  "text_encode_batch_size": 8,
+  "sample_every": 1000,
+  "sample_steps": 30,
+  "sample_cfg": 4.0,
+  "sample_seed": 42,
+  "sample_at_start": true,
+  "noob_pair_index": "../data_index/noob_subset_355662_seed42.npy",
+  "attention_backend": "fa4-varlen-mask_mod",
+  "flash_attn_version": "4.0.0b35",
+  "noob_subset_samples": 355662,
+  "noob_subset_seed": 42,
+  "text_quantization": "quanto_int8",
+  "dit_quantization": "quanto_int8",
+  "keep_models_on_gpu": true,
+  "quantization_backend": "optimum-quanto==0.2.7",
+  "muon_adjust_lr_fn": "match_rms_adamw"
+}
