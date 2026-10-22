@@ -166,13 +166,13 @@ def _sha256(path: Path) -> str:
 @contextmanager
 def _bundle_lock(directory: Path, *, exclusive: bool):
     # flock coordinates this module's readers/writers on Linux training hosts.
-    import fcntl
     lock = directory / ".adapter.lock"
     if not exclusive and not lock.exists():
         # Exported/read-only bundles may contain just the two public files.
         # The digest and embedded config still reject torn/mixed bundles.
         yield
         return
+    import fcntl
     with lock.open("a+b" if exclusive else "rb") as file:
         fcntl.flock(file, fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
         try:
