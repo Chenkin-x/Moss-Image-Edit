@@ -2,6 +2,9 @@
   <a href="README.md">简体中文</a> &nbsp; · &nbsp; <strong>English</strong>
 </p>
 
+> [!NOTE]
+> This repository primarily provides **training code for MOSS Image Edit**. For image-editing inference, visit [ComfyUI-Moss-Image-Edit](https://github.com/Chenkin-x/ComfyUI-Moss-Image-Edit/blob/main/README.en.md) for installation instructions and example workflows.
+
 <p align="center">
   <img src="assets/moss-image-edit-banner-cases.png" alt="MOSS Image Edit — Edit images with words" width="1280">
 </p>
@@ -71,7 +74,22 @@ The workflows include model loading, image inputs, editing, and saving. Adjust o
 
 ## Credits
 
-Thanks to [@onglon114514](https://github.com/onglon114514) for generating the showcase images.
+- Thanks to [@niangao2331](https://github.com/niangao2331) for contributing part of the image-editing data used in this project.
+- Thanks to the [ConceptEdit team](https://huggingface.co/inclusionAI) for releasing the [ConceptEdit-12M dataset](https://huggingface.co/datasets/inclusionAI/ConceptEdit-12M) for single-image editing.
+- Thanks to [@onglon114514](https://github.com/onglon114514) for generating the showcase images.
+
+## Citation
+
+If you use this project's code or LoRA weights in your research, please cite:
+
+```bibtex
+@misc{chinoll2026mossimageedit,
+  author = {chinoll},
+  title  = {{MOSS Image Edit}},
+  year   = {2026},
+  url    = {https://github.com/Chenkin-x/Moss-Image-Edit}
+}
+```
 
 ---
 

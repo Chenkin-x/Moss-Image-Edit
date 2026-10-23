@@ -2,6 +2,9 @@
   <strong>简体中文</strong> &nbsp; · &nbsp; <a href="README.en.md">English</a>
 </p>
 
+> [!NOTE]
+> 本仓库主要提供 **MOSS Image Edit 的训练代码**。如需进行图像编辑推理，请前往 [ComfyUI-Moss-Image-Edit](https://github.com/Chenkin-x/ComfyUI-Moss-Image-Edit)，查看安装说明与示例工作流。
+
 <p align="center">
   <img src="assets/moss-image-edit-banner-cases.png" alt="MOSS Image Edit — 用文字编辑图像" width="1280">
 </p>
@@ -71,7 +74,22 @@
 
 ## 贡献
 
-感谢 [@onglon114514](https://github.com/onglon114514) 贡献展示图的生成。
+- 感谢 [@niangao2331](https://github.com/niangao2331) 贡献本项目使用的部分图像编辑数据。
+- 感谢 [ConceptEdit 团队](https://huggingface.co/inclusionAI) 开源 [ConceptEdit-12M 数据集](https://huggingface.co/datasets/inclusionAI/ConceptEdit-12M)，提供单图编辑数据。
+- 感谢 [@onglon114514](https://github.com/onglon114514) 贡献展示图的生成。
+
+## 引用
+
+如果本项目的代码或 LoRA 权重对你的研究有帮助，欢迎引用：
+
+```bibtex
+@misc{chinoll2026mossimageedit,
+  author = {chinoll},
+  title  = {{MOSS Image Edit}},
+  year   = {2026},
+  url    = {https://github.com/Chenkin-x/Moss-Image-Edit}
+}
+```
 
 ---
 
